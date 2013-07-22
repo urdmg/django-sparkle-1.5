@@ -3,6 +3,7 @@ import zipfile
 import tempfile
 import shutil
 import plistlib
+import markdown
 from django.db import models
 from django.conf import settings
 from sparkle.conf import SPARKLE_PRIVATE_KEY_PATH
@@ -33,6 +34,9 @@ class Version(models.Model):
 
     def __unicode__(self):
         return self.title
+        
+    def release_notes_display(self):
+        return markdown.markdown(self.release_notes)
         
     def save(self, *args, **kwargs):
         super(Version, self).save(*args, **kwargs)
