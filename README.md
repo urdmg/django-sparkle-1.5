@@ -43,8 +43,8 @@ The path to your DSA private key for signing releases.  Defaults to `None`.  If 
 
 This software is licensed under the terms of the BSD license:
 
-Copyright (c) 2011, Jason Emerick
-Copyright (c) 2013, Johannes Spielmann
+Copyright (c) 2011, Jason Emerick  
+Copyright (c) 2013, Johannes Spielmann  
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
