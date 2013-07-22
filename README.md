@@ -4,9 +4,9 @@ Django-sparkle is a Django application to make it easy to publish updates for yo
 
 In addition to publishing updates via the appcast feed, Django-sparkle can also collect system profile information if sparkle is configured to report it.
 
-
 # Requirements
 
+* Django >= 1.5
 * OpenSSL
 * Markdown (For release notes)
 
@@ -14,10 +14,9 @@ In addition to publishing updates via the appcast feed, Django-sparkle can also 
 
 1. `easy_install django-sparkle` or `pip install django-sparkle`
 2. Add `sparkle` to your installed apps
-3. Add `django.contrib.markup` to your installed apps if not already included
 3. In `settings.py` add `SPARKLE_PRIVATE_KEY_PATH` which is the path to your private DSA key for signing your releases.
 4. In `urls.py` include the sparkle URLs by adding something like `(r'^sparkle/', include('sparkle.urls'))`.
-5. Ensure your domain name is properly configured in the sites framework.
+5. Ensure your domain name is properly configured in the sites framework and `MEDIA_URL` is correctly set
 6. `python manage.py syncdb` to create the tables needed for sparkle.
 
 # Usage
