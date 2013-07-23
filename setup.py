@@ -19,8 +19,10 @@ setup(
     license = 'BSD',
     zip_safe = False,
     packages = find_packages(),
-    data_files = [('sparkle/templates/sparkle/', ['sparkle/templates/sparkle/appcast.xml'])],
     include_package_data = True,
+    package_data = {
+            '': ['*.xml'],
+            },
     install_requires = [
         'django-absolute',
         'Markdown>2.1',
