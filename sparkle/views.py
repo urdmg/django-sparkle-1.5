@@ -15,8 +15,5 @@ def appcast(request, application_slug):
         for key, value in request.GET.iteritems():
             record = SystemProfileReportRecord.objects.create(report=report, key=key, value=value)
     
-    # get the latest versions
-    versions = application.version_set.filter(publish_date__lte=timezone.now()).order_by('-publish_date')
-    
-    return render(request, 'sparkle/appcast.xml', {'application': application, 'versions': versions})
+    return render(request, 'sparkle/appcast.xml', {'application': application})
     

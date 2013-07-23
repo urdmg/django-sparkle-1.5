@@ -16,10 +16,15 @@ class Application(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, unique=True)
 
+    def ordered_active_versions(self):
+        """Retrieve all active versions, ordered by publishing date (descending)."""
+        
+        return self.version_set.filter(publish_date__lte=timezone.now()).order_by('-publish_date')
+
     def latest(self):
         """Retrieve the latest active version of this app."""
         try:
-            return self.version_set.filter(publish_date__lte=timezone.now()).order_by('-published')[0]
+            return self.ordered_active_versions[0]
         except IndexError:
             return None
 

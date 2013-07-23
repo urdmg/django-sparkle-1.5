@@ -5,7 +5,7 @@
         <link>{% absolute 'sparkle_application_appcast' application.slug %}</link>
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
-        {% for version in versions %}
+        {% for version in application.ordered_active_versions %}
             <item>
                 <title>{{ version.title }}</title>
 			    <description><![CDATA[
