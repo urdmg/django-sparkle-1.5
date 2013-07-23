@@ -31,8 +31,8 @@ class Version(models.Model):
     application = models.ForeignKey(Application)
     
     title = models.CharField(max_length=100)
-    version = models.CharField(blank=True, null=True, max_length=10)
-    short_version = models.CharField(blank=True, null=True, max_length=50)
+    version = models.CharField(blank=True, null=True, max_length=10, help_text="If you use short_version, this can be the internal version number or build number that will not be shown. In any case, this string is compared to your bundle's CFBundleVersion.")
+    short_version = models.CharField(blank=True, null=True, max_length=50, help_text="A user-displayable version string.")
     dsa_signature = models.CharField(blank=True, null=True, max_length=80)
     length = models.CharField(blank=True, null=True, max_length=20)
     release_notes = models.TextField(blank=True, null=True)
