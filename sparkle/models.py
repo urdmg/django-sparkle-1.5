@@ -24,7 +24,7 @@ class Application(models.Model):
     def latest(self):
         """Retrieve the latest active version of this app."""
         try:
-            return self.ordered_active_versions[0]
+            return self.ordered_active_versions()[0]
         except IndexError:
             return None
 
