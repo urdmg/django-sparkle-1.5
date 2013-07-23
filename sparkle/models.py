@@ -7,7 +7,7 @@ import markdown
 from django.db import models
 from django.conf import settings
 from django.utils.safestring import mark_safe
-from sparkle.conf import SPARKLE_PRIVATE_KEY_PATH
+from sparkle.conf import SPARKLE_PRIVATE_KEY_PATH, UPLOAD_PREFIX
 
 class Application(models.Model):
     """A sparkle application"""
@@ -25,6 +25,23 @@ class Application(models.Model):
     def __unicode__(self):
         return self.name
 
+
+def determine_version_path(instance, filename):
+    """Determine the upload path of a given version file.
+    
+    We do this so that the download URLs for the files are nicer.
+    """
+    
+    extension = os.path.splitext(filename)[1]
+    
+    return "{prefix}{application_slug}/{version_number}{extension}".format(
+        prefix=UPLOAD_PREFIX,
+        application_slug=instance.application.slug,
+        version_number=instance.version,
+        extension=extension
+    )
+    
+
 class Version(models.Model):
     """A version for a given application"""
     
@@ -38,7 +55,7 @@ class Version(models.Model):
     release_notes = models.TextField(blank=True, null=True)
     minimum_system_version = models.CharField(blank=True, null=True, max_length=10)
     published = models.DateTimeField(auto_now_add=True)
-    update = models.FileField(upload_to='sparkle/')
+    update = models.FileField(upload_to=determine_version_path)
     active = models.BooleanField(default=False)
 
     def __unicode__(self):
