@@ -9,9 +9,9 @@ README = read('README.md')
 
 
 setup(
-    name = "django-sparkle",
+    name = "django-sparkle-1.5",
     version = sparkle.__version__,
-    description = 'Django-sparkle is a Django application to make it easy to publish updates for your mac application using sparkle',
+    description = 'Django-sparkle is a Django application to make it easy to publish updates for your mac application using sparkle (intended for Django >= 1.5)',
     long_description = README,
     url = 'https://github.com/shezi/django-sparkle-1.5',
     author = 'Jason Emerick, Johannes Spielmann',
@@ -19,6 +19,7 @@ setup(
     license = 'BSD',
     zip_safe = False,
     packages = find_packages(),
+    data_files = [('sparkle/templates/sparkle/', ['sparkle/templates/sparkle/appcast.xml'])],
     include_package_data = True,
     install_requires = [
         'django-absolute',
