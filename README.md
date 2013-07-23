@@ -1,25 +1,34 @@
-# django-sparkle
+# django-sparkle-1.5
 
-Django-sparkle is a Django application to make it easy to publish updates for your mac application using [sparkle](http://sparkle.andymatuschak.org/).
+Django-sparkle-1.5 is a Django application to make it easy to publish updates for your mac application using [sparkle](http://sparkle.andymatuschak.org/).
 
 In addition to publishing updates via the appcast feed, Django-sparkle can also collect system profile information if sparkle is configured to report it.
+
+This version of django-sparkle is intended for use with Django 1.5 and has some added features. If you're looking for the base version of django-sparkle, please visit [https://github.com/Mobelux/django-sparkle](https://github.com/Mobelux/django-sparkle)
 
 # Requirements
 
 * Django >= 1.5
-* OpenSSL
-* Markdown (For release notes)
+* Markdown > 2.1 (for release notes)
 * django-absolute (for absolute URLs in the link field of the appcast)
+
+## optional requirements
+
+* OpenSSL (if you want to have releases signed)  
+This must be available on the command line as the `openssl` command.
+
+
 
 # Setup
 
-1. `easy_install django-sparkle` or `pip install django-sparkle`
-2. Make sure that `django-absolute` is correctly installed
-2. Add `sparkle` to your installed apps
-3. In `settings.py` add `SPARKLE_PRIVATE_KEY_PATH` which is the path to your private DSA key for signing your releases.
+1. `easy_install django-sparkle-1.5` or `pip install django-sparkle-1.5`
+2. Make sure that `django-absolute` is correctly installed (this needs some additional settings).
+3. Add `sparkle` to your installed apps
 4. In `urls.py` include the sparkle URLs by adding something like `(r'^sparkle/', include('sparkle.urls'))`.
-5. Ensure your domain name is properly configured in the sites framework and `MEDIA_URL` is correctly set
+5. Ensure `MEDIA_URL` is correctly set
 6. `python manage.py syncdb` to create the tables needed for sparkle.
+7. Optional: In `settings.py` add `SPARKLE_PRIVATE_KEY_PATH` which is the path to your private DSA key for signing your releases.
+8. Optional: Add `SPARKLE_UPLOAD_PREFIX` to your settings (default is `sparkle/`). This component will be added to the media URL for your uploaded versions.
 
 # Usage
 
@@ -27,15 +36,19 @@ Create an application and optionally add some versions.
 
 The application's appcast feed will be available at `/whatever_you/configured_in/your_urls_py/(?P<application_slug>\d+)/appcast.xml`.
 
+Your uploaded versions will be available at `{{ MEDIA_URL }}/SPARKLE_UPLOAD_PREFIX/application_slug/version_number.extension`. You can get the URL for an latest version of an Application by calling `instance.latest().update.url`.
+
 Set the `SUFeedURL` key in your Info.plist to point to the sparkle application's appcast URL. `http://example.com/sparkle/app/appcast.xml` for example.
 
 If you want to enable system profiling, be sure to set the `SUEnableSystemProfiling` key in your Info.plist to `YES`.
 
 # Settings
 
-`SPARKLE_PRIVATE_KEY_PATH`
+* `SPARKLE_PRIVATE_KEY_PATH`  
+   The path to your DSA private key for signing releases.  Defaults to `None`.  If not provided, releases will not be automatically signed when uploaded.
+* `SPARKLE_UPLOAD_PREFIX`  
+The path prefix that will be added to your uploaded files. Defaults to `sparkle/`. Use this to configure the upload directory in which your release files will end. Note that this prefix will become part of the download URL. Remember to end this with a `/` if you want a directory.
 
-The path to your DSA private key for signing releases.  Defaults to `None`.  If not provided, releases will not be automatically signed when uploaded.
 
 # To Do
 
