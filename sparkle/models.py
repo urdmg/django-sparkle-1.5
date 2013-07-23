@@ -12,6 +12,7 @@ class Application(models.Model):
     """A sparkle application"""
     
     name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=50, unique=True)
 
     def latest(self):
         """Retrieve the latest active version of this app."""

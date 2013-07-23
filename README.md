@@ -9,10 +9,12 @@ In addition to publishing updates via the appcast feed, Django-sparkle can also 
 * Django >= 1.5
 * OpenSSL
 * Markdown (For release notes)
+* django-absolute (for absolute URLs in the link field of the appcast)
 
 # Setup
 
 1. `easy_install django-sparkle` or `pip install django-sparkle`
+2. Make sure that `django-absolute` is correctly installed
 2. Add `sparkle` to your installed apps
 3. In `settings.py` add `SPARKLE_PRIVATE_KEY_PATH` which is the path to your private DSA key for signing your releases.
 4. In `urls.py` include the sparkle URLs by adding something like `(r'^sparkle/', include('sparkle.urls'))`.
@@ -23,9 +25,9 @@ In addition to publishing updates via the appcast feed, Django-sparkle can also 
 
 Create an application and optionally add some versions.
 
-The application's appcast feed will be available at `/whatever_you/configured_in/your_urls_py/(?P<application_id>\d+)/appcast.xml`.
+The application's appcast feed will be available at `/whatever_you/configured_in/your_urls_py/(?P<application_slug>\d+)/appcast.xml`.
 
-Set the `SUFeedURL` key in your Info.plist to point to the sparkle application's appcast URL. `http://example.com/sparkle/1/appcast.xml` for example.
+Set the `SUFeedURL` key in your Info.plist to point to the sparkle application's appcast URL. `http://example.com/sparkle/app/appcast.xml` for example.
 
 If you want to enable system profiling, be sure to set the `SUEnableSystemProfiling` key in your Info.plist to `YES`.
 

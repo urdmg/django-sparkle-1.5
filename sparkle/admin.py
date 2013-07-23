@@ -2,8 +2,8 @@ from django.contrib import admin
 from sparkle.models import Application, Version, SystemProfileReport, SystemProfileReportRecord
 
 class ApplicationAdmin(admin.ModelAdmin):
-    pass
-
+    prepopulated_fields = {"slug": ("name",)}
+    
 admin.site.register(Application, ApplicationAdmin)
 
 class VersionAdmin(admin.ModelAdmin):
