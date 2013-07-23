@@ -13,6 +13,13 @@ class Application(models.Model):
     
     name = models.CharField(max_length=50)
 
+    def latest(self):
+        """Retrieve the latest active version of this app."""
+        try:
+            return self.version_set.filter(active=True).order_by('-published')[0]
+        except IndexError:
+            return None
+
     def __unicode__(self):
         return self.name
 
