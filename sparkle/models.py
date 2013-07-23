@@ -6,6 +6,7 @@ import plistlib
 import markdown
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from sparkle.conf import SPARKLE_PRIVATE_KEY_PATH, UPLOAD_PREFIX
 
@@ -18,7 +19,7 @@ class Application(models.Model):
     def latest(self):
         """Retrieve the latest active version of this app."""
         try:
-            return self.version_set.filter(active=True).order_by('-published')[0]
+            return self.version_set.filter(publish_date__lte=timezone.now()).order_by('-published')[0]
         except IndexError:
             return None
 
@@ -54,9 +55,10 @@ class Version(models.Model):
     length = models.CharField(blank=True, null=True, max_length=20)
     release_notes = models.TextField(blank=True, null=True)
     minimum_system_version = models.CharField(blank=True, null=True, max_length=10)
-    published = models.DateTimeField(auto_now_add=True)
     update = models.FileField(upload_to=determine_version_path)
-    active = models.BooleanField(default=False)
+
+    created = models.DateTimeField(auto_now_add=True)
+    publish_date = models.DateTimeField(blank=True, null=True, help_text="The date/time when this upate will be (automatically) published. Leave empty for immediate publishing.")
 
     def __unicode__(self):
         return self.title
@@ -120,6 +122,10 @@ class Version(models.Model):
                     
                 self.length = total_size
                 update = True
+        
+        if not self.publish_date:
+            self.publish_date = timezone.now()
+            update = True
         
         if update:
             self.save()

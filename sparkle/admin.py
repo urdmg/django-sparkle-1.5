@@ -7,14 +7,15 @@ class ApplicationAdmin(admin.ModelAdmin):
 admin.site.register(Application, ApplicationAdmin)
 
 class VersionAdmin(admin.ModelAdmin):
-    list_display = ('title', 'version', 'short_version', 'application', 'active',)
+    list_display = ('title', 'version', 'short_version', 'application', 'publish_date',)
     list_display_links = list_display
-    list_filter = ('application', 'active',)
+    list_filter = ('application', 'publish_date',)
     fieldsets = (
-        (None, {'fields': ('application', 'title', 'release_notes', 'version', 'short_version', 'update', 'active',)}),
-        ('Details', {'fields': ('dsa_signature', 'length', 'minimum_system_version', 'published',), 'classes': ('collapse',)})
+        (None, {'fields': ('application', 'title', 'release_notes', 'version', 'short_version', 'update', 'publish_date',)}),
+        ('Details', {'fields': ('dsa_signature', 'length', 'minimum_system_version', 'created',), 'classes': ('collapse',)})
     )
-    readonly_fields = ('published', )
+    readonly_fields = ('created', )
+    ordering = ('-publish_date', )
 
 admin.site.register(Version, VersionAdmin)
 

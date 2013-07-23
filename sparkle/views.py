@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.sites.models import Site
+from django.utils import timezone
 from sparkle.models import Application, Version, SystemProfileReport, SystemProfileReportRecord
 
 def appcast(request, application_slug):
@@ -15,7 +16,7 @@ def appcast(request, application_slug):
             record = SystemProfileReportRecord.objects.create(report=report, key=key, value=value)
     
     # get the latest versions
-    versions = application.version_set.filter(active=True).order_by('-published')
+    versions = application.version_set.filter(publish_date__lte=timezone.now()).order_by('-publish_date')
     
     return render(request, 'sparkle/appcast.xml', {'application': application, 'versions': versions})
     
