@@ -15,6 +15,10 @@ class Application(models.Model):
     
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, unique=True)
+    
+    filename_slug = models.SlugField(max_length=50,
+        help_text="this field will be used to determine the name of the downloadable file"
+    )
 
     def ordered_active_versions(self):
         """Retrieve all active versions, ordered by publishing date (descending)."""
@@ -40,10 +44,11 @@ def determine_version_path(instance, filename):
     
     extension = os.path.splitext(filename)[1]
     
-    return "{prefix}{application_slug}/{application_slug}-{version_number}{extension}".format(
+    return "{prefix}{application_slug}/{filename_slug}-{version_number}{extension}".format(
         prefix=UPLOAD_PREFIX,
         application_slug=instance.application.slug,
-        version_number=instance.version,
+        filename_slug=instance.application.filename_slug,
+        version_number=instance.short_version or instance.version,
         extension=extension
     )
     
