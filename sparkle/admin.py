@@ -1,8 +1,11 @@
 from django.contrib import admin
 from sparkle.models import Application, Version, SystemProfileReport, SystemProfileReportRecord
+from sparkle.conf import SYSTEM_PROFILES_VISIBLE
 
 class ApplicationAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("name",)}
+    prepopulated_fields = {"slug": ("name",), "filename_slug": ("name", )}
+    list_display = ('name', 'slug', 'filename_slug')
+    list_display_links = list_display
     
 admin.site.register(Application, ApplicationAdmin)
 
@@ -19,21 +22,23 @@ class VersionAdmin(admin.ModelAdmin):
 
 admin.site.register(Version, VersionAdmin)
 
-class SystemProfileReportRecordInline(admin.TabularInline):
-    model = SystemProfileReportRecord
-    extra = 0
-    max_num = 0
-    readonly_fields = ('key', 'value')
-    can_delete = False
 
-class SystemProfileReportAdmin(admin.ModelAdmin):
-    inlines = [SystemProfileReportRecordInline,]
+if SYSTEM_PROFILES_VISIBLE:
+    class SystemProfileReportRecordInline(admin.TabularInline):
+        model = SystemProfileReportRecord
+        extra = 0
+        max_num = 0
+        readonly_fields = ('key', 'value')
+        can_delete = False
 
-admin.site.register(SystemProfileReport, SystemProfileReportAdmin)
+    class SystemProfileReportAdmin(admin.ModelAdmin):
+        inlines = [SystemProfileReportRecordInline,]
 
-class SystemProfileReportRecordAdmin(admin.ModelAdmin):
-    list_display = ('key', 'value')
-    list_filter = ('key',)
+    admin.site.register(SystemProfileReport, SystemProfileReportAdmin)
 
-admin.site.register(SystemProfileReportRecord, SystemProfileReportRecordAdmin)
+    class SystemProfileReportRecordAdmin(admin.ModelAdmin):
+        list_display = ('key', 'value')
+        list_filter = ('key',)
+
+    admin.site.register(SystemProfileReportRecord, SystemProfileReportRecordAdmin)
 

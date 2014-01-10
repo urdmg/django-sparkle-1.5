@@ -44,7 +44,7 @@ def determine_version_path(instance, filename):
     
     extension = os.path.splitext(filename)[1]
     
-    return "{prefix}{application_slug}/{filename_slug}-{version_number}{extension}".format(
+    return "{prefix}{application_slug}/{filename_slug}{version_number}{extension}".format(
         prefix=UPLOAD_PREFIX,
         application_slug=instance.application.slug,
         filename_slug=instance.application.filename_slug,
