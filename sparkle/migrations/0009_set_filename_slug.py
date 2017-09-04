@@ -44,6 +44,7 @@ class Migration(DataMigration):
             'dsa_signature': ('django.db.models.fields.CharField', [], {'max_length': '80', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'length': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True', 'blank': 'True'}),
+            'mandatory': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'minimum_system_version': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             'publish_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'release_notes': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),

@@ -15,10 +15,6 @@ class Application(models.Model):
     
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, unique=True)
-    
-    filename_slug = models.SlugField(max_length=50,
-        help_text="this field will be used to determine the name of the downloadable file"
-    )
 
     def ordered_active_versions(self):
         """Retrieve all active versions, ordered by publishing date (descending)."""
@@ -44,11 +40,10 @@ def determine_version_path(instance, filename):
     
     extension = os.path.splitext(filename)[1]
     
-    return "{prefix}{application_slug}/{filename_slug}{version_number}{extension}".format(
+    return "{prefix}{application_slug}/{version_number}{extension}".format(
         prefix=UPLOAD_PREFIX,
         application_slug=instance.application.slug,
-        filename_slug=instance.application.filename_slug,
-        version_number=instance.short_version or instance.version,
+        version_number=instance.version,
         extension=extension
     )
     
@@ -61,6 +56,7 @@ class Version(models.Model):
     title = models.CharField(max_length=100)
     version = models.CharField(blank=True, null=True, max_length=10, help_text="If you use short_version, this can be the internal version number or build number that will not be shown. In any case, this string is compared to your bundle's CFBundleVersion.")
     short_version = models.CharField(blank=True, null=True, max_length=50, help_text="A user-displayable version string.")
+    mandatory = models.BooleanField(default=False)
     dsa_signature = models.CharField(blank=True, null=True, max_length=80)
     length = models.CharField(blank=True, null=True, max_length=20)
     release_notes = models.TextField(blank=True, null=True)
@@ -107,12 +103,14 @@ class Version(models.Model):
                             os.makedirs(d)
                     else:
                         zip_file.extract(f, tempdir)
+			start_path = tempdir
             
                 total_size = 0
-                for dirpath, dirnames, filenames in os.walk(start_path):
-                    for f in filenames:
-                        fp = os.path.join(dirpath, f)
-                        total_size += os.path.getsize(fp)
+		if start_path:
+                    for dirpath, dirnames, filenames in os.walk(start_path):
+                        for f in filenames:
+                            fp = os.path.join(dirpath, f)
+                            total_size += os.path.getsize(fp)
                 
                 info_plist = os.path.join(start_path, 'Contents/Info.plist')
 
@@ -132,6 +130,10 @@ class Version(models.Model):
                     
                 self.length = total_size
                 update = True
+                
+        elif not self.length:
+    	    self.length = os.path.getsize(path)
+    	    update = True
         
         if not self.publish_date:
             self.publish_date = timezone.now()

@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.sites.models import Site
 from django.utils import timezone
 from sparkle.models import Application, Version, SystemProfileReport, SystemProfileReportRecord
+from django.template.response import TemplateResponse
+
 
 def appcast(request, application_slug):
     """Generate the appcast for the given application while recording any system profile reports"""
@@ -15,5 +17,17 @@ def appcast(request, application_slug):
         for key, value in request.GET.iteritems():
             record = SystemProfileReportRecord.objects.create(report=report, key=key, value=value)
     
-    return render(request, 'sparkle/appcast.xml', {'application': application})
+    format = request.GET.get('format', 'xml')
+
+    ct = {
+	'xml': 'application/xml',
+	'json': 'application/json',
+    }
+
+    t = TemplateResponse(request, 'sparkle/appcast.%s' % format, {'application': application}, content_type=ct[format])
+    t.render()
+
+    return t.render()
+    #print(t.content)
+    #return render(request, 'sparkle/appcast.xml', {'application': application})
     

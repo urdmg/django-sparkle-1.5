@@ -1,0 +1,15 @@
+{% load absolute %}[{% for version in application.ordered_active_versions %}
+{
+    "version": "{{ version.version }}",
+    "shortversion": "{{ version.short_version }}",
+    "title": "{{ version.title }}",
+    "timestamp": {{ version.publish_date|date:"U" }},
+    "appsize": {{ version.length }},
+    "notes": "{{ version.release_notes_display }}",
+    "mandatory": {{ version.mandatory }},
+    "external": false,
+    "device_family": null,
+    "id": {{ version.id }},
+    "download_url": "https://stat.qubipass.com{{ version.update.url }}",
+    "app_id": {{ application.id }}
+}{% if not forloop.last %},{% endif %}{% endfor %}]
