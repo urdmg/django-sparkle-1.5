@@ -4,6 +4,9 @@ from notifications.models import Subscriber, Group, Notification, Toggle
 from django import forms
 from django.contrib.auth.models import User
 from notifications.views import send_notifications
+from django.conf.urls import url
+from django.http import HttpResponse, HttpResponseRedirect
+import json
 
 class ApplicationAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
@@ -32,6 +35,13 @@ class VersionAdmin(admin.ModelAdmin):
     readonly_fields = ('created', )
     ordering = ('-publish_date', )
 
+    def get_urls(self):
+        urls = super(VersionAdmin, self).get_urls()
+        my_urls = [
+            url(r'^get-groups/$', self.get_groups),
+        ]
+        return my_urls + urls
+
     def save_model(self, request, obj, form, change): 
         subscribers = form.cleaned_data.get('subscribers', None)
         groups = form.cleaned_data.get('groups', None)
@@ -44,24 +54,18 @@ class VersionAdmin(admin.ModelAdmin):
         notification = Notification.objects.update_or_create(version=instance, user = User.objects.get(id=int(request.user.id)), app_name = str(instance.application))[0]
 
         email_list = []
-        if len(subscribers) == 0 and len(groups)==0:
-            groups = Group.objects.all().filter(application=instance.application)
-            for gr in groups:
-                notification.groups.add(gr)
-                for sub in gr.subscribers.all():
-                    if sub.email not in email_list:
-                        email_list.append(sub.email)
-        else:
-            for subscriber in subscribers:
-                notification.subscribers.add(subscriber)
-                if subscriber.email not in email_list:
-                    email_list.append(subscriber.email)
-    
-            for gr in groups:
-                notification.groups.add(gr)
-                for sub in gr.subscribers.all():
-                    if sub.email not in email_list:
-                        email_list.append(sub.email)
+
+
+        for subscriber in subscribers:
+            notification.subscribers.add(subscriber)
+            if subscriber.email not in email_list:
+                email_list.append(subscriber.email)
+
+        for gr in groups:
+            notification.groups.add(gr)
+            for sub in gr.subscribers.all():
+                if sub.email not in email_list:
+                    email_list.append(sub.email)
 
         if send_now:
             # t = Toggle.objects.get_or_create(id=1)[0]
@@ -69,6 +73,22 @@ class VersionAdmin(admin.ModelAdmin):
             send_notifications(notification, email_list)
 
         return instance
+
+    class Media:
+        js = ['/static/js/get_groups.js']
+
+    def get_groups(self, request):
+
+
+        app = Application.objects.get(id=int(request.GET.get('id', None)))
+        notification = Notification.objects.filter(app_name = app.name).last()
+        groups = []
+        if notification:
+            for g in notification.groups.all():
+                groups.append(g.id)
+
+        return HttpResponse(json.dumps(groups), content_type="application/json")
+
 
 admin.site.register(Version, VersionAdmin)
 
