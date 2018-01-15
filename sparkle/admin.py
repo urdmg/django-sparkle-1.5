@@ -14,7 +14,7 @@ admin.site.register(Application, ApplicationAdmin)
 class NotificationForm(forms.ModelForm):
     subscribers = forms.ModelMultipleChoiceField (queryset=Subscriber.objects.all(), required=False)
     groups = forms.ModelMultipleChoiceField (queryset=Group.objects.all(), required=False)
-    send_now = forms.BooleanField(required=False)
+    send_now = forms.BooleanField(required=False, initial=True)
     
 
 class VersionAdmin(admin.ModelAdmin):
@@ -44,16 +44,24 @@ class VersionAdmin(admin.ModelAdmin):
         notification = Notification.objects.update_or_create(version=instance, user = User.objects.get(id=int(request.user.id)), app_name = str(instance.application))[0]
 
         email_list = []
-        for subscriber in subscribers:
-            notification.subscribers.add(subscriber)
-            if subscriber.email not in email_list:
-                email_list.append(subscriber.email)
-
-        for gr in groups:
-            notification.groups.add(gr)
-            for sub in gr.subscribers.all():
-                if sub.email not in email_list:
-                    email_list.append(sub.email)
+        if len(subscribers) == 0 and len(groups)==0:
+            groups = Group.objects.all().filter(application=instance.application)
+            for gr in groups:
+                notification.groups.add(gr)
+                for sub in gr.subscribers.all():
+                    if sub.email not in email_list:
+                        email_list.append(sub.email)
+        else:
+            for subscriber in subscribers:
+                notification.subscribers.add(subscriber)
+                if subscriber.email not in email_list:
+                    email_list.append(subscriber.email)
+    
+            for gr in groups:
+                notification.groups.add(gr)
+                for sub in gr.subscribers.all():
+                    if sub.email not in email_list:
+                        email_list.append(sub.email)
 
         if send_now:
             # t = Toggle.objects.get_or_create(id=1)[0]
